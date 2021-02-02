@@ -49,7 +49,7 @@ public class ActorGame {
 			currKey = arr[0];
 			
 			if(currKey.equals(prevKey)) {
-				currMovie.add(arr[1]);
+				currMovie.add(actorMap.get(arr[1]));
 			} else {
 				
 				//connect everything
@@ -63,7 +63,7 @@ public class ActorGame {
 				//reset for next movie
 				prevKey = arr[0];
 				currMovie.clear();
-				currMovie.add(arr[1]);
+				currMovie.add(actorMap.get(arr[1]));
 			}
 		}
 		
@@ -92,7 +92,7 @@ public class ActorGame {
 			//split then add to map
 			String[] arr = line.split("~");
 			actorMap.put(arr[0], arr[1]);
-			connections.addVertex(arr[0]); //this also makes all the vertices
+			connections.addVertex(arr[1]); //this also makes all the vertices
 			
 		}
 		
