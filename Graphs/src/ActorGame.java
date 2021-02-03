@@ -84,7 +84,7 @@ public class ActorGame {
 	public void createActors() throws IOException {
 		
 		//setup buffered reader
-		BufferedReader am = new BufferedReader(new FileReader("actors.txt"));
+		BufferedReader am = new BufferedReader(new FileReader("actors2.txt"));
 		
 		//loop through file
 		for (String line = am.readLine(); line != null; line = am.readLine()) {	
@@ -109,7 +109,7 @@ public class ActorGame {
 					
 			//split then add to map
 			String[] arr = line.split("~");
-			actorMap.put(arr[0], arr[1]);
+			movieMap.put(arr[0], arr[1]);
 			}
 				
 		mm.close();
