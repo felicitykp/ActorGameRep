@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,7 +43,7 @@ public class ActorGame {
 	
 	private final int WIDTH = 600, HEIGHT = 800;
 	private String DGRAY = "#463F3A", WHITE = "#F4F3EE", MGRAY = "#8A817C", LGRAY = "#BCB8B1", PINK = "#E0AFA0";
-	private final int TEXT_HEIGHT = 40;
+	private final int TEXT_HEIGHT = 20;
 	private String autofill = "";
 	private String autofill2 = "";
 	
@@ -84,21 +85,24 @@ public class ActorGame {
 			//INPUT PANEL
 			JPanel inputPanel = new JPanel();
 			inputPanel.setBackground(Color.decode(DGRAY));
-			inputPanel.setPreferredSize(new Dimension(WIDTH, 55));
+			inputPanel.setPreferredSize(new Dimension(WIDTH, 60));
 			//ACTOR 1 STUFF
 				//PROMPT LABEL
 				JLabel actor1Prompt = new JLabel();
 				actor1Prompt.setText("Actor 1:");
 				actor1Prompt.setForeground(Color.decode(WHITE));
 				actor1Prompt.setPreferredSize(new Dimension(50, TEXT_HEIGHT));
+				inputPanel.add(Box.createRigidArea(new Dimension(73, TEXT_HEIGHT))); //SPACING
 				inputPanel.add(actor1Prompt);
+				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				//INPUT AREA
 				//setup
 				StyleContext sc = new StyleContext();
 				final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
 				JTextPane actor1Input = new JTextPane(doc);
-				actor1Input.setPreferredSize(new Dimension(120, 18));
+				actor1Input.setPreferredSize(new Dimension(200, 18));
 				inputPanel.add(actor1Input);
+				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				actor1Input.setHighlighter(null);
 				//define styles
 				Style style1 = sc.addStyle("Heading2", null);
@@ -133,7 +137,7 @@ public class ActorGame {
 				});
 				//AUTOFILL BUTTON
 				JButton fill1Button = new JButton("Fill");
-				fill1Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT - 20));
+				fill1Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT));
 				fill1Button.setBackground(Color.decode(PINK));
 				fill1Button.setForeground(Color.decode(DGRAY));
 				fill1Button.setOpaque(true);
@@ -149,6 +153,7 @@ public class ActorGame {
 					}
 				});
 				inputPanel.add(fill1Button);
+				inputPanel.add(Box.createRigidArea(new Dimension(73, TEXT_HEIGHT))); //SPACING
 				
 			//ACTOR 2 STUFF
 				//PROMPT
@@ -157,13 +162,15 @@ public class ActorGame {
 				actor2Prompt.setForeground(Color.decode(WHITE));
 				actor2Prompt.setPreferredSize(new Dimension(50, TEXT_HEIGHT));
 				inputPanel.add(actor2Prompt);
+				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				//INPUT AREA
 				//setup
 				StyleContext sc2 = new StyleContext();
 				final DefaultStyledDocument doc2 = new DefaultStyledDocument(sc2);
 				JTextPane actor2Input = new JTextPane(doc2);
-				actor2Input.setPreferredSize(new Dimension(120, 18));
+				actor2Input.setPreferredSize(new Dimension(200, 18));
 				inputPanel.add(actor2Input);
+				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				actor2Input.setHighlighter(null);
 				//define styles
 				Style style3 = sc2.addStyle("Heading2", null);
@@ -198,7 +205,7 @@ public class ActorGame {
 				});
 				//AUTOFILL BUTTON
 				JButton fill2Button = new JButton("Fill");
-				fill2Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT - 20));
+				fill2Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT));
 				fill2Button.setBackground(Color.decode(PINK));
 				fill2Button.setForeground(Color.decode(DGRAY));
 				fill2Button.setOpaque(true);
@@ -225,7 +232,7 @@ public class ActorGame {
 			//button panel
 			JPanel buttonPanel = new JPanel();
 			buttonPanel.setBackground(Color.decode(DGRAY));
-			buttonPanel.setPreferredSize(new Dimension(WIDTH, 100));
+			buttonPanel.setPreferredSize(new Dimension(WIDTH, 50));
 				//button 1
 				JButton distButton = new JButton("Check Distance");
 				distButton.setPreferredSize(new Dimension(150, TEXT_HEIGHT));
