@@ -1,13 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,16 +18,21 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.StyleContext;
+
+
 
 public class ActorGame {
+	
+	/* Here is my "Kevin Bacon Game" that essentially find the degrees of seperation between two actors using
+	 * the text files included in the project. I have two additional functionalities that are unique to my project.
+	 * The first is an auto fill text feature. I made it so as you typed an actors name it suggested input values. 
+	 * If you press the fill button is will accept the auto fill suggestion.
+	*/
 	
 	//VARIABLES
 	public HashMap<String, String> actorMap = new HashMap<String, String>();
@@ -40,6 +43,8 @@ public class ActorGame {
 	private final int WIDTH = 600, HEIGHT = 800;
 	private String DGRAY = "#463F3A", WHITE = "#F4F3EE", MGRAY = "#8A817C", LGRAY = "#BCB8B1", PINK = "#E0AFA0";
 	private final int TEXT_HEIGHT = 40;
+	private String autofill = "";
+	private String autofill2 = "";
 	
 	//CONSTRUCTOR
 	public ActorGame() throws IOException {
@@ -49,6 +54,7 @@ public class ActorGame {
 		createMovieMap();
 		int counter = setupGraph();
 		keywords = actorMap.keySet();
+
 		
 		//UI STUFF
 			//set up main panel
@@ -67,77 +73,147 @@ public class ActorGame {
 					g.drawString("How to Play:", 10, 20);
 					g.drawString("Input two actors in the spaces below and use the tools to calculate how far away", 20, 45);
 					g.drawString("they are from eachother using other actors. The path used to connect them will be", 20, 60);
-					g.drawString("printed below.", 20, 75);
+					g.drawString("printed below. Please note that the Autofill function is case sensitive", 20, 75);
+	
 				}
 			};
 			topPanel.setBackground(Color.decode(WHITE));
 			topPanel.setPreferredSize(new Dimension(WIDTH, 100));
 			panel.add(topPanel);
 			
-			//input panel
+			//INPUT PANEL
 			JPanel inputPanel = new JPanel();
 			inputPanel.setBackground(Color.decode(DGRAY));
 			inputPanel.setPreferredSize(new Dimension(WIDTH, 55));
-			//actor 1
+			//ACTOR 1 STUFF
+				//PROMPT LABEL
 				JLabel actor1Prompt = new JLabel();
 				actor1Prompt.setText("Actor 1:");
 				actor1Prompt.setForeground(Color.decode(WHITE));
 				actor1Prompt.setPreferredSize(new Dimension(50, TEXT_HEIGHT));
 				inputPanel.add(actor1Prompt);
-				
-				
-				JTextPane actor1Input = new JTextPane();
-				StyledDocument doc = actor1Input.getStyledDocument();
-				Style style1 = actor1Input.addStyle("typed", null);
-		        StyleConstants.setForeground(style1, Color.decode(MGRAY));
-		        StyleConstants.setBackground(style1, Color.decode(WHITE));
-		        Style style2 = actor1Input.addStyle("generated", null);
-		        StyleConstants.setForeground(style2, Color.decode(PINK));
-		        StyleConstants.setBackground(style2, Color.decode(WHITE));
-		       //  actor1Input
+				//INPUT AREA
+				//setup
+				StyleContext sc = new StyleContext();
+				final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
+				JTextPane actor1Input = new JTextPane(doc);
 				actor1Input.setPreferredSize(new Dimension(120, 18));
+				inputPanel.add(actor1Input);
+				actor1Input.setHighlighter(null);
+				//define styles
+				Style style1 = sc.addStyle("Heading2", null);
+				style1.addAttribute(StyleConstants.Foreground, Color.decode(DGRAY));
+				Style style2 = sc.addStyle("Heading2", null);
+				style2.addAttribute(StyleConstants.Foreground, Color.decode(MGRAY));
+				//key listener
 				actor1Input.addKeyListener(new KeyListener() {
-
-					public void keyPressed(KeyEvent e) {
-						
+					public void keyReleased(KeyEvent e) {
+						//find auto fill
 						String orgText = actor1Input.getText();
-						
+						orgText = orgText.substring(0, orgText.length()-autofill.length());
 						for(String key : keywords) {
-							if(key.contains(orgText)) {
-								
-								try {
-									doc.insertString(doc.getLength(), orgText, style1);
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-								}
-								
-								String updated = key.substring(orgText.length() - 1);
-								
-								try {
-									doc.insertString(doc.getLength(), updated, style2);
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-								}
-								
+							String curr = actorMap.get(key);
+							if(curr.contains(orgText)) {
+								autofill = curr.substring(orgText.length());
 								break;
-							}
+							} 
 						}
+						//set new text w auto fill
+						actor1Input.setText(orgText + autofill);
+						doc.setCharacterAttributes(actor1Input.getText().length() - autofill.length(),
+								autofill.length(), style2, true);
+						doc.setCharacterAttributes(0, actor1Input.getText().length() -  autofill.length(),
+								style1, true);
+						actor1Input.setCaretPosition(actor1Input.getText().length() - autofill.length());
+						
 					}
-					public void keyReleased(KeyEvent e) {}
+					public void keyPressed(KeyEvent e) {}
 					public void keyTyped(KeyEvent e) {}
 					
 				});
-				inputPanel.add(actor1Input);
-			//actor 2
+				//AUTOFILL BUTTON
+				JButton fill1Button = new JButton("Fill");
+				fill1Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT - 20));
+				fill1Button.setBackground(Color.decode(PINK));
+				fill1Button.setForeground(Color.decode(DGRAY));
+				fill1Button.setOpaque(true);
+				//fill1Button.setFocusPainted(false);
+				fill1Button.setBorderPainted(false);
+				fill1Button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						//applies the auto fill
+						String curr = actor1Input.getText();
+						String updated = curr.substring(0, 1).toUpperCase() + curr.substring(1);
+						actor1Input.setText(updated);
+						doc.setCharacterAttributes(0, curr.length(), style1, true);
+					}
+				});
+				inputPanel.add(fill1Button);
+				
+			//ACTOR 2 STUFF
+				//PROMPT
 				JLabel actor2Prompt = new JLabel();
 				actor2Prompt.setText("Actor 2:");
 				actor2Prompt.setForeground(Color.decode(WHITE));
 				actor2Prompt.setPreferredSize(new Dimension(50, TEXT_HEIGHT));
 				inputPanel.add(actor2Prompt);
-				JTextField actor2Input = new JTextField(10);
-				actor2Input.setBackground(Color.decode(WHITE));
-				actor2Input.setForeground(Color.decode(MGRAY));
-				inputPanel.add(actor2Input);	
+				//INPUT AREA
+				//setup
+				StyleContext sc2 = new StyleContext();
+				final DefaultStyledDocument doc2 = new DefaultStyledDocument(sc2);
+				JTextPane actor2Input = new JTextPane(doc2);
+				actor2Input.setPreferredSize(new Dimension(120, 18));
+				inputPanel.add(actor2Input);
+				actor2Input.setHighlighter(null);
+				//define styles
+				Style style3 = sc2.addStyle("Heading2", null);
+				style3.addAttribute(StyleConstants.Foreground, Color.decode(DGRAY));
+				Style style4 = sc2.addStyle("Heading2", null);
+				style4.addAttribute(StyleConstants.Foreground, Color.decode(MGRAY));
+				//key listener
+				actor2Input.addKeyListener(new KeyListener() {
+					public void keyReleased(KeyEvent e) {
+						//find auto fill value
+						String orgText = actor2Input.getText();
+						orgText = orgText.substring(0, orgText.length()-autofill2.length());
+						for(String key : keywords) {
+							String curr = actorMap.get(key);
+							if(curr.contains(orgText)) {
+								autofill2 = curr.substring(orgText.length());
+								break;
+							} 
+						}
+						//fill new text area
+						actor2Input.setText(orgText + autofill2);
+						doc2.setCharacterAttributes(actor2Input.getText().length() - autofill2.length(),
+								autofill2.length(), style4, true);
+						doc2.setCharacterAttributes(0, actor2Input.getText().length() -  autofill2.length(),
+								style3, true);
+						actor2Input.setCaretPosition(actor2Input.getText().length() - autofill2.length());
+						
+					}
+					public void keyPressed(KeyEvent e) {}
+					public void keyTyped(KeyEvent e) {}
+					
+				});
+				//AUTOFILL BUTTON
+				JButton fill2Button = new JButton("Fill");
+				fill2Button.setPreferredSize(new Dimension(65, TEXT_HEIGHT - 20));
+				fill2Button.setBackground(Color.decode(PINK));
+				fill2Button.setForeground(Color.decode(DGRAY));
+				fill2Button.setOpaque(true);
+				//fill1Button.setFocusPainted(false);
+				fill2Button.setBorderPainted(false);
+				fill2Button.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						//applies the auto fill
+						String curr = actor2Input.getText();
+						String updated = curr.substring(0, 1).toUpperCase() + curr.substring(1);
+						actor2Input.setText(updated);
+						doc.setCharacterAttributes(0, curr.length(), style3, true);
+					}
+				});
+				inputPanel.add(fill2Button);
 			panel.add(inputPanel);
 			
 			//output panel
@@ -184,6 +260,7 @@ public class ActorGame {
 		}
 		
 	}
+	
 	
 	public boolean isValid(String temp) {
 		
@@ -267,6 +344,7 @@ public class ActorGame {
 			
 			//split then add to map
 			String[] arr = line.split("~");
+			
 			actorMap.put(arr[0], arr[1]);
 			connections.addVertex(arr[1]); //this also makes all the vertices
 			
