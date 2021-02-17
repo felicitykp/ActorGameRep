@@ -230,9 +230,12 @@ public class ActorGame {
 				JButton distButton = new JButton("Check Distance");
 				distButton.setPreferredSize(new Dimension(150, TEXT_HEIGHT));
 				distButton.setBackground(Color.decode(PINK));
+				distButton.setForeground(Color.decode(DGRAY));
+				distButton.setOpaque(true);
+				distButton.setBorderPainted(false);
 				distButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						
+						distSearch(actor1Input.getText(), actor2Input.getText());
 					}});	
 				buttonPanel.add(distButton);
 			panel.add(buttonPanel);
@@ -255,8 +258,11 @@ public class ActorGame {
 		
 		if(isValid(actor1) == true && isValid(actor2) == true) {
 			
+			ArrayList<String> path = connections.BFS(actor1, actor2);
+			System.out.println(path);
+			
 		} else {
-			//error
+			System.out.println("nope");
 		}
 		
 	}
@@ -264,17 +270,9 @@ public class ActorGame {
 	
 	public boolean isValid(String temp) {
 		
-		String[] arr = temp.split(" ");
+		temp.toLowerCase();
 		
-		arr[0].toLowerCase();
-		arr[0] = arr[0].substring(0, 1).toUpperCase() + arr[0].substring(1);
-		
-		arr[1].toLowerCase();
-		arr[1] = arr[0].substring(0, 1).toUpperCase() + arr[1].substring(1);
-		
-		String check = arr[0] + " " + arr[1];
-		
-		if(keywords.contains(check)) {
+		if(actorMap.containsValue(temp)) {
 			return true;
 		} else {
 			return false;
@@ -344,6 +342,7 @@ public class ActorGame {
 			
 			//split then add to map
 			String[] arr = line.split("~");
+			arr[1].toLowerCase();
 			
 			actorMap.put(arr[0], arr[1]);
 			connections.addVertex(arr[1]); //this also makes all the vertices
