@@ -41,9 +41,10 @@ public class ActorGame {
 	 		* this is basically like 5 functionalities in one so you should just marvel in how this works
 	 		* and ignore my second functionality :)
 	 		
-	 * Extra Functionality 2: 
+	 * Extra Functionality 2: All movies
+	 		* This functionality just lists all the movies that an actor is in. It works even if only 1 actor
+	 		* is entered and it is pretty simple (but auto fill was hard so shush)
 	 */
-	
 	
 	
 	//VARIABLES
