@@ -43,9 +43,13 @@ public class LabeledGraph<E, T> {
 			return v1;
 		}
 		
+		public T getLabel() {
+			return this.label;
+		}
+		
 	}
 	
-	private class Vertex {
+	class Vertex {
 		E info;
 		HashSet<Edge> edges;
 		
@@ -54,9 +58,21 @@ public class LabeledGraph<E, T> {
 			edges = new HashSet<Edge>();
 		}
 		
-		public HashSet getEdges() {
-			return edges;
+		public ArrayList<T> getEdges(){
+			
+			//isolate just the labels of edges
+			HashSet<T> allLabels = new HashSet<T>();
+			
+			for(Edge e : edges) {
+				allLabels.add(e.getLabel());
+			}
+			
+			ArrayList<T> returnable = new ArrayList<T>(allLabels);
+			
+			return returnable;
+			
 		}
+		
 	}
 	
 	
