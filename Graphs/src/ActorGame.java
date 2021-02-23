@@ -273,7 +273,7 @@ public class ActorGame {
 				JTextArea displayText = new JTextArea();
 				displayText.setForeground(Color.decode(DGRAY));
 				displayText.setBackground(Color.decode(LGRAY));
-				displayText.setPreferredSize(new Dimension(WIDTH - 60, 500));
+				displayText.setPreferredSize(new Dimension(WIDTH - 150, 500));
 				displayText.setEditable(false);
 				displayText.setText(displayed);        				//this line is where i set the output initially
 				outputPanel.add(displayText);
@@ -375,27 +375,40 @@ public class ActorGame {
 			
 			//formats the movies
 			String act1String = "";
-			if(act1Movies.size() == 0) {
-				act1String = "Hmm we can't find any movies they were in";
-			} else {
-				for(int i = 0; i < act1Movies.size()-1; i++) {
-					act1String += "\n" + act1Movies.get(i);
-				}
+			for(int i = 0; i < act1Movies.size(); i++) {
+				act1String += "\n" + act1Movies.get(i);
 			}
 			String act2String = "";
-			if(act2Movies.size() == 0) {
-				act2String = "Hmm we can't find any movies they were in";
-			} else {
-				for(int i = 0; i < act2Movies.size()-1; i++) {
-					act2String += "\n" + act2Movies.get(i);
-				}
+			for(int i = 0; i < act2Movies.size(); i++) {
+				act2String += "\n" + act2Movies.get(i);
 			}
+			
 			
 			//sets the display text
 			displayed = actor1 + " was in:\n" + act1String + "\n\n";
 			displayed += actor2 + " was in:\n" + act2String;
 			
+		} else if(isValid(actor1) == true) {
 			
+			//same as above but just actor 1
+			ArrayList<String> act1Movies = connections.getVertex(actor1).getEdges();
+			String act1String = "";
+			for(int i = 0; i < act1Movies.size(); i++) {
+				act1String += "\n" + act1Movies.get(i);
+			}
+			displayed = actor1 + " was in:\n" + act1String;
+		} else if (isValid(actor2) == true){
+			
+			//same as above just actor 2
+			ArrayList<String> act2Movies = connections.getVertex(actor2).getEdges();
+			String act2String = "";
+			for(int i = 0; i < act2Movies.size(); i++) {
+				act2String += "\n" + act2Movies.get(i);
+			}
+			displayed = actor2 + " was in:\n" + act2String;
+		} else {
+			displayed = "Please enter at least one valid Actor Name";
+			System.out.println("Error: Not Valid Inputs");
 		}
 		
 		
