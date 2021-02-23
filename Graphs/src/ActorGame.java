@@ -3,8 +3,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
@@ -38,7 +39,7 @@ public class ActorGame {
 	//VARIABLES
 	public HashMap<String, String> actorMap = new HashMap<String, String>();
 	public HashMap<String, String> movieMap = new HashMap<String, String>();
-	public LabeledGraph<String> connections = new LabeledGraph<String>();
+	public LabeledGraph<String, String> connections = new LabeledGraph<String, String>();
 	public Set<String> keywords;
 	
 	private final int WIDTH = 600, HEIGHT = 800;
@@ -46,6 +47,7 @@ public class ActorGame {
 	private final int TEXT_HEIGHT = 20;
 	private String autofill = "";
 	private String autofill2 = "";
+	public String displayed = "";
 	
 	//CONSTRUCTOR
 	public ActorGame() throws IOException {
@@ -57,15 +59,15 @@ public class ActorGame {
 		keywords = actorMap.keySet();
 
 		
-		//UI STUFF
-			//set up main panel
+		//UI STUFF (sorry it's a lot)
+			//MAIN PANEL
 			JPanel panel = new JPanel();
 			BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
 			panel.setLayout(boxlayout);
 			panel.setBorder(BorderFactory.createEmptyBorder(20,20, 20, 20));
 			panel.setBackground(Color.decode(DGRAY));
 			
-			//instructions panel
+			//INSTRUCTIONS PANEL
 			JPanel topPanel = new JPanel(){ //override draw function
 				public void paint(Graphics g) {
 					g.setColor(Color.decode(MGRAY));
@@ -101,6 +103,7 @@ public class ActorGame {
 				final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
 				JTextPane actor1Input = new JTextPane(doc);
 				actor1Input.setPreferredSize(new Dimension(200, 18));
+				actor1Input.setBackground(Color.decode(WHITE));
 				inputPanel.add(actor1Input);
 				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				actor1Input.setHighlighter(null);
@@ -110,14 +113,14 @@ public class ActorGame {
 				Style style2 = sc.addStyle("Heading2", null);
 				style2.addAttribute(StyleConstants.Foreground, Color.decode(MGRAY));
 				//key listener
-				actor1Input.addKeyListener(new KeyListener() {
+				actor1Input.addKeyListener(new KeyAdapter() {
 					public void keyReleased(KeyEvent e) {
-						//find auto fill
-						String orgText = actor1Input.getText();
+						String orgText = actor1Input.getText().trim();
 						orgText = orgText.substring(0, orgText.length()-autofill.length());
 						for(String key : keywords) {
 							String curr = actorMap.get(key);
-							if(curr.contains(orgText)) {
+							if(curr.length() >= orgText.length() && 
+									curr.substring(0,orgText.length()).equalsIgnoreCase(orgText)) {
 								autofill = curr.substring(orgText.length());
 								break;
 							} 
@@ -129,10 +132,7 @@ public class ActorGame {
 						doc.setCharacterAttributes(0, actor1Input.getText().length() -  autofill.length(),
 								style1, true);
 						actor1Input.setCaretPosition(actor1Input.getText().length() - autofill.length());
-						
 					}
-					public void keyPressed(KeyEvent e) {}
-					public void keyTyped(KeyEvent e) {}
 					
 				});
 				//AUTOFILL BUTTON
@@ -141,10 +141,9 @@ public class ActorGame {
 				fill1Button.setBackground(Color.decode(PINK));
 				fill1Button.setForeground(Color.decode(DGRAY));
 				fill1Button.setOpaque(true);
-				//fill1Button.setFocusPainted(false);
 				fill1Button.setBorderPainted(false);
 				fill1Button.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+					public void actionPerformed(ActionEvent e) {  // THIS IS WHERE AUTOFILL HAPPENS
 						//applies the auto fill
 						String curr = actor1Input.getText();
 						String updated = curr.substring(0, 1).toUpperCase() + curr.substring(1);
@@ -169,6 +168,7 @@ public class ActorGame {
 				final DefaultStyledDocument doc2 = new DefaultStyledDocument(sc2);
 				JTextPane actor2Input = new JTextPane(doc2);
 				actor2Input.setPreferredSize(new Dimension(200, 18));
+				actor2Input.setBackground(Color.decode(WHITE));
 				inputPanel.add(actor2Input);
 				inputPanel.add(Box.createRigidArea(new Dimension(5, TEXT_HEIGHT))); //SPACING
 				actor2Input.setHighlighter(null);
@@ -178,29 +178,26 @@ public class ActorGame {
 				Style style4 = sc2.addStyle("Heading2", null);
 				style4.addAttribute(StyleConstants.Foreground, Color.decode(MGRAY));
 				//key listener
-				actor2Input.addKeyListener(new KeyListener() {
+				actor2Input.addKeyListener(new KeyAdapter() {
 					public void keyReleased(KeyEvent e) {
-						//find auto fill value
-						String orgText = actor2Input.getText();
+						String orgText = actor2Input.getText().trim();
 						orgText = orgText.substring(0, orgText.length()-autofill2.length());
 						for(String key : keywords) {
 							String curr = actorMap.get(key);
-							if(curr.contains(orgText)) {
+							if(curr.length() >= orgText.length() && 
+									curr.substring(0,orgText.length()).equalsIgnoreCase(orgText)) {
 								autofill2 = curr.substring(orgText.length());
 								break;
 							} 
 						}
-						//fill new text area
+//						//set new text w auto fill
 						actor2Input.setText(orgText + autofill2);
 						doc2.setCharacterAttributes(actor2Input.getText().length() - autofill2.length(),
-								autofill2.length(), style4, true);
+								autofill2.length(), style2, true);
 						doc2.setCharacterAttributes(0, actor2Input.getText().length() -  autofill2.length(),
-								style3, true);
+								style1, true);
 						actor2Input.setCaretPosition(actor2Input.getText().length() - autofill2.length());
-						
 					}
-					public void keyPressed(KeyEvent e) {}
-					public void keyTyped(KeyEvent e) {}
 					
 				});
 				//AUTOFILL BUTTON
@@ -209,7 +206,6 @@ public class ActorGame {
 				fill2Button.setBackground(Color.decode(PINK));
 				fill2Button.setForeground(Color.decode(DGRAY));
 				fill2Button.setOpaque(true);
-				//fill1Button.setFocusPainted(false);
 				fill2Button.setBorderPainted(false);
 				fill2Button.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -227,12 +223,19 @@ public class ActorGame {
 			JPanel outputPanel = new JPanel();
 			outputPanel.setBackground(Color.decode(LGRAY));
 			outputPanel.setPreferredSize(new Dimension(WIDTH, 505));
+				//display text
+				JTextArea displayText = new JTextArea();
+				displayText.setForeground(Color.decode(DGRAY));
+				displayText.setBackground(Color.decode(LGRAY));
+				displayText.setText(displayed);
+				outputPanel.add(displayText);
 			panel.add(outputPanel);
 			
 			//button panel
 			JPanel buttonPanel = new JPanel();
 			buttonPanel.setBackground(Color.decode(DGRAY));
 			buttonPanel.setPreferredSize(new Dimension(WIDTH, 50));
+			buttonPanel.add(Box.createRigidArea(new Dimension(WIDTH, TEXT_HEIGHT / 2))); //SPACING
 				//button 1
 				JButton distButton = new JButton("Check Distance");
 				distButton.setPreferredSize(new Dimension(150, TEXT_HEIGHT));
@@ -242,9 +245,26 @@ public class ActorGame {
 				distButton.setBorderPainted(false);
 				distButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						distSearch(actor1Input.getText(), actor2Input.getText());
+						distSearch(actor1Input.getText().trim(), actor2Input.getText().trim());
+						displayText.setText("\n\n\n" + displayed);
 					}});	
 				buttonPanel.add(distButton);
+				buttonPanel.add(Box.createRigidArea(new Dimension(15, TEXT_HEIGHT / 2))); //SPACING
+				//button 2
+				JButton numButton = new JButton("Get all Movies");
+				numButton.setPreferredSize(new Dimension(150, TEXT_HEIGHT));
+				numButton.setBackground(Color.decode(PINK));
+				numButton.setForeground(Color.decode(DGRAY));
+				numButton.setOpaque(true);
+				numButton.setBorderPainted(false);
+				numButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						//second function
+						// displayed = actor1Input.getText() + " is in " + connections.getVertex(actor1Input.getText().edges.size());
+						
+						
+				}});
+				buttonPanel.add(numButton);
 			panel.add(buttonPanel);
 			
 			
@@ -265,11 +285,25 @@ public class ActorGame {
 		
 		if(isValid(actor1) == true && isValid(actor2) == true) {
 			
-			ArrayList<String> path = connections.BFS(actor1, actor2);
+			ArrayList<Object> path = connections.BFS(actor1, actor2);
+			
 			System.out.println(path);
 			
+			if(path.size() == 3) { //if directly connected
+				displayed = "Whoa " + path.get(0) + " and " + path.get(2) + " were both in " + path.get(1);
+			} else {
+				
+				displayed = "Let's see... \n\n";
+				
+				for(int i = 0; i < path.size() - 1; i = i+2) {
+					
+					displayed += path.get(i) + " was in " + path.get(i+1) + " with " + path.get(i+2) + "\n\n";
+				}	
+			}
+			
 		} else {
-			System.out.println("nope");
+			displayed = "Something Went Wrong :/";
+			System.out.println("something messed up");
 		}
 		
 	}
@@ -314,7 +348,7 @@ public class ActorGame {
 				//connect everything
 				for(int i = 0; i < currMovie.size(); i++) {
 					for(int j = i+1; j < currMovie.size(); j++) {
-						connections.connect(currMovie.get(i), currMovie.get(j));
+						connections.connect(currMovie.get(i), currMovie.get(j), movieMap.get(currKey));
 						counter++;
 					}
 				}
@@ -324,15 +358,7 @@ public class ActorGame {
 				currMovie.clear();
 				currMovie.add(actorMap.get(arr[1]));
 			}
-		}
-		
-		for(int i = 0; i < currMovie.size(); i++) {
-			for(int j = i+1; j < currMovie.size(); j++) {
-				connections.connect(currMovie.get(i), currMovie.get(j));
-				counter++;
-			}
-		}
-		
+		}	
 		
 		sg.close();
 		
